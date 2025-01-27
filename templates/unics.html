@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UNICS Bank Customer Support AI Assistant</title>
+    <style>
+        /* Chat Button */
+        #chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Chat Button Label */
+        #chat-label {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            font-size: 14px;
+            color: #4CAF50;
+            text-align: center;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        /* Chat Window */
+        #chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            max-height: 600px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Chat Header */
+        #chat-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Close Button */
+        #close-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Chat Body */
+        #chat-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f1f1f1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+        }
+
+        /* Chat Footer */
+        #chat-footer {
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+        }
+
+        /* Chat Trademark */
+        #chat-trademark {
+            text-align: center;
+            padding: 5px;
+            font-size: 10px;
+            color: #888;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ccc;
+            line-height: 1.2;
+        }
+
+        #chat-trademark a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        /* Chat Input */
+        #chat-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Send Button */
+        #send-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Message Bubbles */
+        .message {
+            margin-bottom: 10px;
+            clear: both;
+        }
+
+        .user-message {
+            text-align: right;
+        }
+
+        .bot-message {
+            text-align: left;
+        }
+
+        .message p {
+            display: inline-block;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .user-message p {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .bot-message p {
+            background-color: #e5e5ea;
+            color: black;
+        }
+
+        /* Strong tag styling */
+        .bot-message p strong {
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* Loading indicator */
+        .typing-indicator {
+            display: inline-flex;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #e5e5ea;
+            margin-bottom: 10px;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #888;
+            border-radius: 50%;
+            animation: typing-bounce 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Chat Button -->
+    <button id="chat-button">💬</button>
+    <div id="chat-label">Chat with us</div>
+
+    <!-- Chat Window -->
+    <div id="chat-window">
+        <div id="chat-header">
+            <span>UNICS Bank AI Assistant</span>
+            <button id="close-button">&times;</button>
+        </div>
+        <div id="chat-body">
+            <!-- Welcome message -->
+            <div class="message bot-message">
+                <p>Hello! I'm your UNICS Bank AI Assistant. How can I help you today?</p>
+            </div>
+        </div>
+        <div id="chat-footer">
+            <input type="text" id="chat-input" placeholder="Type your message...">
+            <button id="send-button">Send</button>
+        </div>
+        <div id="chat-trademark">
+            <p>Powered by <a href="https://www.orfa.ai" target="_blank">OrfaAI</a></p>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const chatButton = document.getElementById('chat-button');
+        const chatLabel = document.getElementById('chat-label');
+        const chatWindow = document.getElementById('chat-window');
+        const closeButton = document.getElementById('close-button');
+        const sendButton = document.getElementById('send-button');
+        const chatInput = document.getElementById('chat-input');
+        const chatBody = document.getElementById('chat-body');
+
+        // Toggle chat window
+        chatButton.addEventListener('click', () => {
+            chatWindow.style.display = 'flex';
+            chatLabel.style.display = 'none';
+            chatInput.focus();
+        });
+
+        closeButton.addEventListener('click', () => {
+            chatWindow.style.display = 'none';
+            chatLabel.style.display = 'block';
+        });
+
+        // Create typing indicator
+        const createTypingIndicator = () => {
+            const indicator = document.createElement("div");
+            indicator.className = "typing-indicator";
+            indicator.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            return indicator;
+        };
+
+        // Append message to chat
+        const appendMessage = (content, isUser) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            const messageContent = document.createElement('p');
+            messageContent.innerHTML = content;
+            messageDiv.appendChild(messageContent);
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+            return messageDiv;
+        };
+
+        // Send message to server
+        const sendMessage = async () => {
+            const userInput = chatInput.value.trim();
+            if (!userInput) return;
+
+            // Display user message
+            appendMessage(userInput, true);
+            chatInput.value = '';
+
+            // Add typing indicator
+            const typingIndicator = createTypingIndicator();
+            chatBody.appendChild(typingIndicator);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            try {
+                const response = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: userInput })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch response");
+                }
+
+                // Remove typing indicator
+                typingIndicator.remove();
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let botMessage = document.createElement('div');
+                botMessage.className = 'message bot-message';
+                const botContent = document.createElement('p');
+                botMessage.appendChild(botContent);
+                chatBody.appendChild(botMessage);
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.trim() === '') continue;
+                        
+                        try {
+                            const data = JSON.parse(line.replace(/^data: /, ''));
+                            if (data.content) {
+                                // Format markdown to HTML
+                                let formattedContent = data.content
+                                    // Convert bold markdown to HTML
+                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                    // Convert italic markdown to HTML
+                                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                                    // Preserve line breaks
+                                    .replace(/\n/g, '<br>');
+                                
+                                botContent.innerHTML += formattedContent;
+                                chatBody.scrollTop = chatBody.scrollHeight;
+                            }
+                        } catch (e) {
+                            console.error('Error parsing chunk:', e);
+                        }
+                    }
+                }
+            } catch (error) {
+                // Remove typing indicator if still present
+                if (typingIndicator.parentNode) {
+                    typingIndicator.remove();
+                }
+                appendMessage("Error: Unable to connect to the server.", false);
+                console.error(error);
+            }
+        };
+
+        // Send message on button click or pressing Enter
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Show chat label on initial load
+        chatLabel.style.display = 'block';
+    </script>
+</body>
+</html>
